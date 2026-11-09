@@ -302,12 +302,17 @@ const nuevoId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
 const esperar = ms => new Promise(r => setTimeout(r, ms));
 function hoyISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function fmtFecha(iso) { if (!iso) return ''; const [y, m, d] = String(iso).slice(0, 10).split('-'); return d + '/' + m + '/' + y; }
-function fmtCant(n) { return Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 3 }); }
+// Formato del sistema contable: coma = miles, punto = decimales (1,500.250)
+function fmtCant(n) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 3 }); }
 function parseCantidad(v) {
   if (typeof v === 'number') v = String(v);
   let s = String(v ?? '').trim().replace(/\s/g, '');
   if (!s) return { err: 'Escriba la cantidad' };
-  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  // Punto = decimales. Coma = miles, solo en grupos de 3 (1,500 o 1,500.25)
+  if (s.includes(',')) {
+    if (!/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) return { err: 'Use punto para decimales (ej: 0.050) y coma solo para miles (ej: 1,500)' };
+    s = s.replace(/,/g, '');
+  }
   if (!/^\d+(\.\d+)?$/.test(s)) return { err: 'Cantidad no válida' };
   if ((s.split('.')[1] || '').length > 3) return { err: 'Máximo 3 decimales' };
   const n = Number(s);
@@ -406,7 +411,7 @@ function crearFila(datos = {}) {
     <div class="f-item combo"><label class="m-label">Insumo (código y producto)</label>
       <input class="in-item" placeholder="Escriba el nombre o el código" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list">
       <ul class="lista" role="listbox" hidden></ul><div class="err"></div></div>
-    <div class="f-cant"><label class="m-label">Cantidad</label><input class="in-cant" inputmode="decimal" placeholder="0,000" autocomplete="off"><div class="err"></div></div>
+    <div class="f-cant"><label class="m-label">Cantidad</label><input class="in-cant" inputmode="decimal" placeholder="0.000" autocomplete="off"><div class="err"></div></div>
     <div class="f-um"><label class="m-label">U/M</label><span class="um">—</span></div>
     <button class="f-del" type="button" aria-label="Quitar insumo" title="Quitar">×</button>`;
   f.el = el;
