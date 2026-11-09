@@ -677,10 +677,10 @@ function comprobantePDF(sol) {
     startY: 32, margin: { left: x0, right: 10, top: 12, bottom: 14 },
     head: [['Serie', 'No. Solicitud', 'Fecha de Solicitud', 'Orden Prod./Norma de Reparto', 'Codigo', 'Producto', 'cantidad', 'U/M', 'Proceso', 'DocSap']],
     body: filasExcel(sol).map(c => [...c.map(v => pdfTxt(v)), '']), // DocSap: en blanco, para el consecutivo del sistema contable
-    styles: { fontSize: 7.5, cellPadding: 1.4, halign: 'center', lineColor: [205, 214, 223], lineWidth: 0.15, valign: 'middle' },
-    headStyles: { fillColor: [168, 202, 236], textColor: [8, 42, 82], fontStyle: 'bold', fontSize: 7 },
+    styles: { fontSize: 7.5, cellPadding: 1.4, halign: 'center', textColor: 0, lineColor: [90, 90, 90], lineWidth: 0.15, valign: 'middle' },
+    headStyles: { fillColor: [214, 230, 246], textColor: 0, fontStyle: 'bold', fontSize: 7 }, // azul suave: se imprime claro
     columnStyles: { 0: { cellWidth: 17 }, 1: { cellWidth: 14 }, 2: { cellWidth: 17 }, 3: { cellWidth: 24 }, 4: { cellWidth: 22 }, 5: { cellWidth: 46, halign: 'left' }, 6: { cellWidth: 16 }, 7: { cellWidth: 10 }, 8: { cellWidth: 14 }, 9: { cellWidth: 16 } },
-    alternateRowStyles: { fillColor: [246, 249, 252] },
+    alternateRowStyles: { fillColor: false },
     didParseCell: d => { if (d.section === 'head') d.cell.styles.halign = d.column.index === 5 ? 'left' : 'center'; }
   });
   // Firmas fijas en el pie de la última página
