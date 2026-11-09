@@ -226,7 +226,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </section>
 
   <section class="tarjeta recientes" id="panelRecientes" hidden>
-    <h2>Mis solicitudes recientes <span class="cuenta">en este dispositivo</span></h2>
+    <h2>Mis últimas 5 solicitudes <span class="cuenta">en este dispositivo</span></h2>
     <div style="overflow-x:auto"><table><thead><tr><th>Solicitud</th><th>Fecha</th><th>Órdenes</th><th>Insumos</th><th></th></tr></thead><tbody id="tablaRecientes"></tbody></table></div>
   </section>
 
@@ -568,7 +568,7 @@ function procesarRespuesta(sol, r, desdeFormulario) {
   if (r && r.solicitud) { sol.solicitud = r.solicitud; sol.registrado = r.registrado; }
   if (sol.filas.every(f => f.confirmada) && sol.solicitud) {
     quitarPendiente(sol.uid);
-    const hist = store.get('insumos_historial', []); hist.unshift(sol); store.set('insumos_historial', hist.slice(0, 20));
+    const hist = store.get('insumos_historial', []); hist.unshift(sol); store.set('insumos_historial', hist.slice(0, 5)); // solo las últimas 5
     store.set('insumos_serie', sol.encabezado.serie); store.set('insumos_solicitante', sol.encabezado.solicitante);
     if (desdeFormulario) limpiarFormulario();
     mostrarResultado(sol); pintarPendientes(); pintarRecientes();
@@ -641,7 +641,7 @@ function filasExcel(sol) { const e = sol.encabezado; return sol.filas.map(f => [
 $('#resPdf').addEventListener('click', () => ultimo && comprobantePDF(ultimo));
 $('#resNueva').addEventListener('click', () => { $('#vResultado').hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); });
 function pintarRecientes() {
-  const h = store.get('insumos_historial', []);
+  const h = store.get('insumos_historial', []).slice(0, 5);
   $('#panelRecientes').hidden = !h.length;
   $('#tablaRecientes').innerHTML = h.map((s, k) => `<tr><td><b>${esc(s.encabezado.serie)} # ${esc(s.solicitud)}</b></td><td>${fmtFecha(s.encabezado.fecha)}</td><td>${esc(ordenes(s))}</td><td>${s.filas.length}</td><td><button class="btn chico" data-k="${k}">PDF</button></td></tr>`).join('');
 }
