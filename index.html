@@ -53,7 +53,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .campo label small{font-weight:400;color:var(--suave)}
 .campo input,.campo select,.campo textarea{border:1px solid var(--linea);border-radius:8px;padding:10px 11px;background:#fff;min-height:42px;width:100%}
 .campo textarea{min-height:60px;resize:vertical}
-.campo input:focus,.campo select:focus,.campo textarea:focus,.in-item:focus,.in-cant:focus,.in-orden:focus{outline:2px solid var(--azul-2);outline-offset:0;border-color:var(--azul-2)}
+.campo input:focus,.campo select:focus,.campo textarea:focus,.in-item:focus,.in-cant:focus,.in-orden:focus,.in-obs:focus{outline:2px solid var(--azul-2);outline-offset:0;border-color:var(--azul-2)}
 .campo .fijo{border:1px dashed var(--linea);border-radius:8px;padding:10px 11px;min-height:42px;background:#f7f9fb;color:var(--suave)}
 .campo .fijo b{color:var(--tinta)}
 .err{color:var(--rojo);font-size:12.5px;min-height:0}
@@ -66,7 +66,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .mal{border-color:var(--rojo)!important;background:var(--rojo-claro)!important}
 
 /* Filas de insumos */
-.cab-filas,.fila{display:grid;grid-template-columns:34px 230px minmax(0,1fr) 130px 64px 40px;gap:12px;align-items:start}
+.cab-filas,.fila{display:grid;grid-template-columns:34px 225px minmax(0,1fr) 120px 56px 40px;gap:12px;align-items:start}
+/* Observación en una segunda línea, debajo de la orden y el insumo */
+.fila{grid-template-areas:"num orden item cant um del" ". obs obs . . .";row-gap:6px}
+.fila>.f-num{grid-area:num}.fila>.f-orden{grid-area:orden}.fila>.f-item{grid-area:item}.fila>.f-obs{grid-area:obs}.fila>.f-cant{grid-area:cant}.fila>.f-um{grid-area:um}.fila>.f-del{grid-area:del}
+.in-obs{min-height:36px!important;padding:7px 11px!important;font-size:14px;background:#fbfcfd!important}
 .cab-filas{font-size:13px;font-weight:700;color:#33475a;padding:10px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:#f6f9fc;align-items:center;white-space:nowrap;margin:0 -18px;padding-left:18px;padding-right:18px}
 .cab-filas>span:first-child{text-align:center}
 .cab-filas small{display:block;font-weight:400;color:var(--suave);font-size:11.5px}
@@ -77,7 +81,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .f-num{width:28px;height:28px;border-radius:50%;background:var(--azul-claro);color:var(--azul);display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:7px}
 .m-label{display:none;font-size:12px;font-weight:600;color:var(--suave);margin-bottom:3px}
 .combo{position:relative}
-.in-item,.in-cant,.in-orden{width:100%;border:1px solid var(--linea);border-radius:8px;padding:10px 11px;min-height:42px;background:#fff}
+.in-item,.in-cant,.in-orden,.in-obs{width:100%;border:1px solid var(--linea);border-radius:8px;padding:10px 11px;min-height:42px;background:#fff}
 .in-item.ok{border-color:#9fd1b4;background:var(--verde-claro)}
 .in-cant{text-align:right;font-variant-numeric:tabular-nums}
 .um{display:flex;align-items:center;min-height:42px;font-weight:600;color:#33475a}
@@ -158,10 +162,10 @@ button,input,select,textarea{font:inherit;color:inherit}
   .tarjeta{padding:14px}
   .campos{grid-template-columns:1fr}
   .cab-filas{display:none}
-  .fila{grid-template-columns:1fr 1fr 40px;grid-template-areas:"num num del" "orden orden orden" "item item item" "cant um um";gap:8px 10px;border:1px solid var(--linea);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .fila{grid-template-columns:1fr 1fr 40px;grid-template-areas:"num num del" "orden orden orden" "item item item" "obs obs obs" "cant um um";gap:8px 10px;border:1px solid var(--linea);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   .f-num{grid-area:num;display:block;width:auto;height:auto;background:none;border-radius:0;justify-content:start;margin:0;font-size:13px}
   .f-num::before{content:"Insumo "}
-  .f-orden{grid-area:orden}.f-item{grid-area:item}.f-um{grid-area:um}.f-cant{grid-area:cant}.f-del{grid-area:del;justify-self:end;height:30px}
+  .f-orden{grid-area:orden}.f-item{grid-area:item}.f-obs{grid-area:obs}.f-um{grid-area:um}.f-cant{grid-area:cant}.f-del{grid-area:del;justify-self:end;height:30px}
   .m-label{display:block}
   .lista li{grid-template-columns:1fr auto}
   .lista li .c{grid-column:1/-1}
@@ -247,7 +251,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   <div class="sub" id="resSub"></div>
   <div style="font-size:13px;font-weight:600;margin:4px 0 6px">Así queda registrado:</div>
   <div id="resNota" style="font-size:13px;color:var(--ambar);margin-bottom:6px"></div>
-  <div style="overflow-x:auto"><table class="vista"><thead><tr><th>Serie</th><th>Solicitud #</th><th>Fecha de Solicitud</th><th>Orden Prod./Norma de Reparto</th><th>Codigo</th><th>Producto</th><th>cantidad</th><th>U/M</th><th>Proceso</th></tr></thead><tbody id="resTabla"></tbody></table></div>
+  <div style="overflow-x:auto"><table class="vista"><thead><tr><th>Serie</th><th>Solicitud #</th><th>Fecha de Solicitud</th><th>Orden Prod./Norma de Reparto</th><th>Codigo</th><th>Producto</th><th>Observación</th><th>cantidad</th><th>U/M</th><th>Proceso</th></tr></thead><tbody id="resTabla"></tbody></table></div>
   <div class="pie-v">
     <button class="btn" id="resPdf" type="button">⬇ Descargar comprobante PDF</button>
     <button class="btn prim" id="resNueva" type="button">Nueva solicitud</button>
@@ -314,7 +318,8 @@ function parseCantidad(v) {
   if (!s) return { err: 'Escriba la cantidad' };
   // Punto = decimales. Coma = miles, solo en grupos de 3 (1,500 o 1,500.25)
   if (s.includes(',')) {
-    if (!/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) return { err: 'Use punto para decimales (ej: 0.050) y coma solo para miles (ej: 1,500)' };
+    // La coma de miles nunca va después de un 0 inicial: "0,500" es un decimal mal escrito, no 500
+    if (!/^[1-9]\d{0,2}(,\d{3})+(\.\d+)?$/.test(s)) return { err: 'Use punto para decimales (ej: 0.500) y coma solo para miles (ej: 1,500)' };
     s = s.replace(/,/g, '');
   }
   if (!/^\d+(\.\d+)?$/.test(s)) return { err: 'Cantidad no válida' };
@@ -403,14 +408,15 @@ const apiDemo = {
   }
 };
 const api = DEMO ? apiDemo : apiReal;
-function paraEnviar(sol) { return { uid: sol.uid, encabezado: sol.encabezado, filas: sol.filas.map(f => ({ id: f.id, orden: f.orden, codigo: f.codigo, cantidad: f.cantidad })) }; }
+function paraEnviar(sol) { return { uid: sol.uid, encabezado: sol.encabezado, filas: sol.filas.map(f => ({ id: f.id, orden: f.orden, codigo: f.codigo, cantidad: f.cantidad, obs: f.obs || '' })) }; }
+const limpiarObs = s => String(s ?? '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
 
 /* ===================== filas de insumos ===================== */
 const filas = []; // {id, el, codigo, cantTxt}
 function crearFila(datos = {}) {
   if (filas.length >= CONFIG.MAX_FILAS) { toast('Máximo ' + CONFIG.MAX_FILAS + ' insumos por solicitud'); return null; }
   const previa = filas[filas.length - 1];
-  const f = { id: nuevoId(), codigo: '', cantTxt: '', orden: datos.orden != null ? String(datos.orden) : (previa ? previa.orden : '') };
+  const f = { id: nuevoId(), codigo: '', cantTxt: '', obs: datos.obs != null ? String(datos.obs) : '', orden: datos.orden != null ? String(datos.orden) : (previa ? previa.orden : '') };
   const el = document.createElement('div');
   el.className = 'fila';
   el.innerHTML = `
@@ -419,6 +425,7 @@ function crearFila(datos = {}) {
     <div class="f-item combo"><label class="m-label">Insumo (código y producto)</label>
       <input class="in-item" placeholder="Escriba el nombre o el código" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list">
       <ul class="lista" role="listbox" hidden></ul><div class="err"></div><div class="nota-fila" hidden></div></div>
+    <div class="f-obs"><label class="m-label">Observación (opcional)</label><input class="in-obs" maxlength="40" placeholder="Observación: talla M, color negro…" autocomplete="off"><div class="err"></div></div>
     <div class="f-cant"><label class="m-label">Cantidad</label><input class="in-cant" inputmode="decimal" placeholder="0.000" autocomplete="off"><div class="err"></div></div>
     <div class="f-um"><label class="m-label">U/M</label><span class="um">—</span></div>
     <button class="f-del" type="button" aria-label="Quitar insumo" title="Quitar">×</button>`;
@@ -426,6 +433,7 @@ function crearFila(datos = {}) {
   filas.push(f);
   $('#filas').appendChild(el);
   $('.in-orden', el).value = f.orden;
+  $('.in-obs', el).value = f.obs;
   conectarFila(f);
   if (datos.codigo) elegir(f, datos.codigo, false);
   if (datos.cantTxt != null) { f.cantTxt = String(datos.cantTxt); $('.in-cant', el).value = f.cantTxt; }
@@ -435,6 +443,9 @@ function crearFila(datos = {}) {
 function conectarFila(f) {
   const inp = $('.in-item', f.el), lista = $('.lista', f.el), cant = $('.in-cant', f.el), ord = $('.in-orden', f.el);
   ord.addEventListener('input', () => { f.orden = ord.value; limpiarError(ord); guardarBorrador(); });
+  const obs = $('.in-obs', f.el);
+  obs.addEventListener('input', () => { f.obs = obs.value; guardarBorrador(); });
+  obs.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cant.focus(); } });
   ord.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); inp.focus(); } });
   let activo = -1, res = [];
   const pintar = () => {
@@ -528,14 +539,14 @@ function guardarBorrador() {
   clearTimeout(borradorT);
   borradorT = setTimeout(() => store.set('insumos_borrador', {
     serie: $('#serie').value, fecha: $('#fecha').value, solicitante: $('#solicitante').value,
-    filas: filas.map(f => ({ orden: f.orden, codigo: f.codigo, cantTxt: f.cantTxt }))
+    filas: filas.map(f => ({ orden: f.orden, codigo: f.codigo, obs: f.obs, cantTxt: f.cantTxt }))
   }), 250);
 }
 function restaurarBorrador() {
   const b = store.get('insumos_borrador', null);
-  $('#serie').value = (b && b.serie) || store.get('insumos_serie', '') || '';
+  $('#serie').value = (b && b.serie) || '';
   $('#fecha').value = (b && b.fecha) || hoyISO();
-  $('#solicitante').value = (b && b.solicitante) || store.get('insumos_solicitante', '') || '';
+  $('#solicitante').value = (b && b.solicitante) || '';
   const fs = (b && b.filas && b.filas.length) ? b.filas : [{}];
   fs.forEach(x => crearFila(x));
 }
@@ -555,7 +566,7 @@ async function enviar() {
   const sol = {
     uid: nuevoId(), creado: new Date().toISOString(),
     encabezado: { serie: $('#serie').value, fecha: $('#fecha').value, proceso: CONFIG.PROCESO, solicitante: $('#solicitante').value },
-    filas: usadas.map(f => { const i = POR_CODIGO.get(f.codigo); return { id: nuevoId(), orden: f.orden, codigo: i.c, producto: i.n, um: i.u, cantidad: parseCantidad(f.cantTxt).n, confirmada: false }; })
+    filas: usadas.map(f => { const i = POR_CODIGO.get(f.codigo); return { id: nuevoId(), orden: f.orden, codigo: i.c, obs: limpiarObs(f.obs), producto: i.n, um: i.u, cantidad: parseCantidad(f.cantTxt).n, confirmada: false }; })
   };
   // 1) Se guarda en el dispositivo ANTES de enviar: si algo falla, queda en el panel de pendientes
   const pend = store.get('insumos_pendientes', []); pend.push(sol); store.set('insumos_pendientes', pend);
@@ -585,7 +596,6 @@ function procesarRespuesta(sol, r, desdeFormulario) {
   if (sol.filas.every(f => f.confirmada) && sol.solicitud) {
     quitarPendiente(sol.uid);
     const hist = store.get('insumos_historial', []); hist.unshift(sol); store.set('insumos_historial', hist.slice(0, 5)); // solo las últimas 5
-    store.set('insumos_serie', sol.encabezado.serie); store.set('insumos_solicitante', sol.encabezado.solicitante);
     if (desdeFormulario) limpiarFormulario();
     mostrarResultado(sol); pintarPendientes(); pintarRecientes();
   } else {
@@ -597,6 +607,8 @@ function procesarRespuesta(sol, r, desdeFormulario) {
 function quitarPendiente(uid) { store.set('insumos_pendientes', store.get('insumos_pendientes', []).filter(p => p.uid !== uid)); }
 function limpiarFormulario() {
   filas.splice(0).forEach(f => f.el.remove());
+  $('#serie').value = ''; $('#solicitante').value = '';
+  ['serie', 'fecha', 'solicitante'].forEach(id => limpiarError(document.getElementById(id)));
   $('#fecha').value = hoyISO(); $('#avisoFilas').innerHTML = '';
   crearFila(); store.del('insumos_borrador'); actualizarResumen();
 }
@@ -649,15 +661,22 @@ function mostrarResultado(sol) {
   $('#resTitulo').textContent = sol.solicitud === 'N/A' ? `Solicitud ${sol.encabezado.serie} registrada (sin consecutivo)` : `Solicitud ${sol.encabezado.serie} # ${sol.solicitud} registrada`;
   $('#resNota').textContent = nPdf ? `${nPdf === sol.filas.length ? 'Todos los insumos con N/A solo salen' : nPdf === 1 ? '1 insumo con N/A solo sale' : nPdf + ' insumos con N/A solo salen'} en el comprobante: no van al Excel.` : '';
   $('#resSub').textContent = `${sol.encabezado.solicitante} · Guardada ${sol.registrado}`;
-  $('#resTabla').innerHTML = filasExcel(sol).map(c => `<tr>${c.map((v, k) => `<td${k === 1 || k === 6 ? ' class="n"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('');
+  $('#resTabla').innerHTML = filasExcel(sol).map(c => `<tr>${c.map((v, k) => `<td${k === 1 || k === 7 ? ' class="n"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('');
   $('#sello').textContent = DEMO ? '✓ Confirmado (demostración)' : '✓ Confirmado por Google';
   $('#toast').hidden = true;
   $('#vResultado').hidden = false;
 }
 // Las 9 columnas exactas del formato RE-INV-004
-function filasExcel(sol) { const e = sol.encabezado; return sol.filas.map(f => [e.serie, f.soloPdf ? 'N/A' : sol.solicitud, fmtFecha(e.fecha), f.orden, f.codigo, f.producto, fmtCant(f.cantidad), f.um, e.proceso]); }
-$('#resPdf').addEventListener('click', () => ultimo && comprobantePDF(ultimo));
-$('#resNueva').addEventListener('click', () => { $('#vResultado').hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+// Filas del comprobante: las 9 columnas del formato + Observación después de Producto
+function filasExcel(sol) { const e = sol.encabezado; return sol.filas.map(f => [e.serie, f.soloPdf ? 'N/A' : sol.solicitud, fmtFecha(e.fecha), f.orden, f.codigo, f.producto, f.obs || '', fmtCant(f.cantidad), f.um, e.proceso]); }
+function cerrarResultado() { $('#vResultado').hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+$('#resPdf').addEventListener('click', () => {
+  if (!ultimo || !window.jspdf) { comprobantePDF(ultimo); return; }
+  comprobantePDF(ultimo);
+  cerrarResultado();
+  toast('Comprobante descargado. El formulario quedó listo para una nueva solicitud.', 4000);
+});
+$('#resNueva').addEventListener('click', cerrarResultado);
 function pintarRecientes() {
   const h = store.get('insumos_historial', []).slice(0, 5);
   $('#panelRecientes').hidden = !h.length;
@@ -688,13 +707,13 @@ function comprobantePDF(sol) {
   // Tabla: las 9 columnas del Excel, sin repetir datos arriba
   doc.autoTable({
     startY: 32, margin: { left: x0, right: 10, top: 12, bottom: 14 },
-    head: [['Serie', 'No. Solicitud', 'Fecha de Solicitud', 'Orden Prod./Norma de Reparto', 'Codigo', 'Producto', 'cantidad', 'U/M', 'Proceso', 'DocSap']],
+    head: [['Serie', 'No. Solicitud', 'Fecha de Solicitud', 'Orden Prod./Norma de Reparto', 'Codigo', 'Producto', 'Observación', 'cantidad', 'U/M', 'Proceso', 'DocSap']],
     body: filasExcel(sol).map(c => [...c.map(v => pdfTxt(v)), '']), // DocSap: en blanco, para el consecutivo del sistema contable
     styles: { fontSize: 7.5, cellPadding: 1.4, halign: 'center', textColor: 0, lineColor: [90, 90, 90], lineWidth: 0.15, valign: 'middle' },
     headStyles: { fillColor: [214, 230, 246], textColor: 0, fontStyle: 'bold', fontSize: 7 }, // azul suave: se imprime claro
-    columnStyles: { 0: { cellWidth: 17 }, 1: { cellWidth: 14 }, 2: { cellWidth: 17 }, 3: { cellWidth: 24 }, 4: { cellWidth: 22 }, 5: { cellWidth: 46, halign: 'left' }, 6: { cellWidth: 16 }, 7: { cellWidth: 10 }, 8: { cellWidth: 14 }, 9: { cellWidth: 16 } },
+    columnStyles: { 0: { cellWidth: 15 }, 1: { cellWidth: 13 }, 2: { cellWidth: 16 }, 3: { cellWidth: 20 }, 4: { cellWidth: 19 }, 5: { cellWidth: 36, halign: 'left' }, 6: { cellWidth: 25, halign: 'left' }, 7: { cellWidth: 15 }, 8: { cellWidth: 10 }, 9: { cellWidth: 13 }, 10: { cellWidth: 14 } },
     alternateRowStyles: { fillColor: false },
-    didParseCell: d => { if (d.section === 'head') d.cell.styles.halign = d.column.index === 5 ? 'left' : 'center'; }
+    didParseCell: d => { if (d.section === 'head') d.cell.styles.halign = (d.column.index === 5 || d.column.index === 6) ? 'left' : 'center'; }
   });
   // Firmas fijas en el pie de la última página
   const y = H - 24;
@@ -725,8 +744,8 @@ function comprobantePDF(sol) {
 $('#btnPlantilla').addEventListener('click', () => {
   if (!window.XLSX) { toast('No se pudo cargar el lector de Excel. Revise la conexión.'); return; }
   const wb = XLSX.utils.book_new();
-  const h1 = XLSX.utils.aoa_to_sheet([['Orden Prod./Norma de Reparto', 'Codigo', 'cantidad'], ['2102229', ITEMS[0].c, 1.5], ['2102230', ITEMS[1].c, 0.05]]);
-  h1['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 12 }];
+  const h1 = XLSX.utils.aoa_to_sheet([['Orden Prod./Norma de Reparto', 'Codigo', 'cantidad', 'Observacion'], ['2102229', ITEMS[0].c, 1.5, ''], ['2102230', ITEMS[1].c, 0.05, 'talla M']]);
+  h1['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 12 }, { wch: 28 }];
   XLSX.utils.book_append_sheet(wb, h1, 'Insumos');
   const h2 = XLSX.utils.aoa_to_sheet([['Codigo', 'Producto', 'U/M'], ...ITEMS.map(i => [i.c, i.n, i.u])]);
   h2['!cols'] = [{ wch: 16 }, { wch: 60 }, { wch: 8 }];
@@ -743,18 +762,18 @@ $('#archivo').addEventListener('change', async e => {
     const m = XLSX.utils.sheet_to_json(hoja, { header: 1, raw: true, defval: '' });
     const ih = m.findIndex(r => r.some(c => norm(c).trim() === 'codigo'));
     if (ih < 0) throw new Error('No encontré la columna "Codigo". Use la plantilla.');
-    const cc = m[ih].findIndex(c => norm(c).trim() === 'codigo'), cq = m[ih].findIndex(c => norm(c).trim() === 'cantidad'), co = m[ih].findIndex(c => norm(c).includes('orden'));
+    const cc = m[ih].findIndex(c => norm(c).trim() === 'codigo'), cq = m[ih].findIndex(c => norm(c).trim() === 'cantidad'), co = m[ih].findIndex(c => norm(c).includes('orden')), cb = m[ih].findIndex(c => norm(c).includes('observ'));
     if (co < 0) throw new Error('No encontré la columna "Orden Prod./Norma de Reparto". Use la plantilla.');
     if (cq < 0) throw new Error('No encontré la columna "Cantidad". Use la plantilla.');
     const errores = [], nuevas = [], ya = new Set(filas.filter(f => f.codigo).map(f => f.orden.trim() + '|' + f.codigo));
     for (let k = ih + 1; k < m.length; k++) {
-      const cod = String(m[k][cc]).trim(), q = m[k][cq], ord = String(m[k][co]).trim();
+      const cod = String(m[k][cc]).trim(), q = m[k][cq], ord = String(m[k][co]).trim(), ob = cb >= 0 ? limpiarObs(m[k][cb]) : '';
       if (!cod && String(q).trim() === '' && !ord) continue;
       if (!/^[A-Za-z0-9-]{1,20}$/.test(ord)) { errores.push(`Fila ${k + 1}: falta la orden o no es válida (${cod})`); continue; }
       if (!POR_CODIGO.has(cod)) { errores.push(`Fila ${k + 1}: el código "${cod}" no está en el listado`); continue; }
       if (ya.has(ord + '|' + cod)) { errores.push(`Fila ${k + 1}: ${cod} está repetido con la orden ${ord}`); continue; }
       const p = parseCantidad(q); if (p.err) { errores.push(`Fila ${k + 1}: ${p.err.toLowerCase()} (${cod})`); continue; }
-      ya.add(ord + '|' + cod); nuevas.push({ orden: ord, codigo: cod, cantTxt: fmtCant(p.n) });
+      ya.add(ord + '|' + cod); nuevas.push({ orden: ord, codigo: cod, obs: ob, cantTxt: fmtCant(p.n) });
     }
     const conDatos = filasConDatos();
     filas.filter(f => !conDatos.includes(f)).forEach(f => { filas.splice(filas.indexOf(f), 1); f.el.remove(); }); // quita filas vacías
