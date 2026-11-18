@@ -288,7 +288,8 @@ const CONFIG = {
   // Pegue aquí la URL de la aplicación web del Apps Script (termina en /exec).
   // Si se deja vacía, el formulario funciona en MODO DEMOSTRACIÓN.
   SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzaN9XHSYvI7Xmo9i8FFGhI8_k6RUHFAaaIgPnzfNNiXv4FbpcSYO8wEorTnTZa2gZG3g/exec',
-  SERIES: ['SCI-1B1','SCI-1A1','SCI-1A7','SCI-1A2','SCI-1A3','SCI-2A2','SCI-1C4','SCI-1C5','SCI-2A3','SCI-2A16','SCI-PRO1','SCI-LOG1','SCI-ADMI','SCI-CIB1'],
+  // Copia de respaldo: el formulario usa las series de la pestaña "Series" de Google Sheets
+  SERIES: ['SCI-1B1','SCI-1A1','SCI-1A7','SCI-1A2','SCI-1A3','SCI-2A2','SCI-1C4','SCI-1C5','SCI-2A3','SCI-2A16','SCI-PRO1','SCI-LOG1','SCI-ADMI','SCI-CIB1','SCI-2A10'],
   PROCESO: 'SCI',
   MAX_FILAS: 50,
   DIAS_ATRAS: 30   // fecha de solicitud: máximo 30 días atrás, nunca futura
@@ -506,7 +507,7 @@ function validar() {
   let ok = true, primero = null;
   const falla = (el, msg) => { mostrarError(el, msg); ok = false; primero = primero || el; };
   const serie = $('#serie'), fecha = $('#fecha'), sol = $('#solicitante');
-  if (!CONFIG.SERIES.includes(serie.value)) falla(serie, 'Seleccione la serie');
+  if (!SERIES.includes(serie.value)) falla(serie, 'Seleccione la serie');
   if (!fecha.value) falla(fecha, 'Escriba la fecha');
   else {
     const hoy = hoyISO(), min = new Date(); min.setDate(min.getDate() - CONFIG.DIAS_ATRAS);
@@ -816,11 +817,19 @@ window.addEventListener('online', () => { estadoRed(); if (store.get('insumos_pe
 window.addEventListener('offline', estadoRed);
 
 /* ===================== inicio ===================== */
+let SERIES = CONFIG.SERIES.slice();
+// Llena la lista de Serie sin perder la que ya estaba escogida
+function pintarSeries(lista) {
+  if (Array.isArray(lista) && lista.length) SERIES = lista.map(x => String(x).trim()).filter(Boolean);
+  const sel = $('#serie'), actual = sel.value;
+  sel.innerHTML = '<option value="">Seleccione…</option>' + SERIES.map(s => `<option>${esc(s)}</option>`).join('');
+  if (SERIES.includes(actual)) sel.value = actual;
+}
 async function iniciar() {
   $('#bandaDemo').hidden = !DEMO;
   $('#procesoTxt').textContent = CONFIG.PROCESO;
-  $('#serie').insertAdjacentHTML('beforeend', CONFIG.SERIES.map(s => `<option>${esc(s)}</option>`).join(''));
   const cache = store.get('insumos_items', null);
+  pintarSeries(cache && cache.series);
   cargarLista(cache && cache.items && cache.items.length ? cache.items : ITEMS_RESPALDO);
   restaurarBorrador(); actualizarResumen(); pintarPendientes(); pintarRecientes(); estadoRed();
   $('#btnAgregar').addEventListener('click', () => { const f = crearFila(); if (f) { $('.in-item', f.el).focus(); guardarBorrador(); } });
@@ -830,7 +839,14 @@ async function iniciar() {
     limpiarFormulario(); window.scrollTo({ top: 0, behavior: 'smooth' }); toast('Formulario limpio.');
   });
   if (!DEMO) {
-    try { const r = await api.items(); if (r.items && r.items.length) { cargarLista(r.items); store.set('insumos_items', { t: Date.now(), items: r.items }); } }
+    try {
+      const r = await api.items();
+      if (r.items && r.items.length) {
+        cargarLista(r.items);
+        if (Array.isArray(r.series) && r.series.length) pintarSeries(r.series);
+        store.set('insumos_items', { t: Date.now(), items: r.items, series: SERIES });
+      }
+    }
     catch (e) { /* se usa la copia guardada o la de respaldo */ }
   }
 }
