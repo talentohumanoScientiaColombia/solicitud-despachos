@@ -226,6 +226,7 @@ button,input,select,textarea{font:inherit;color:inherit}
       <button class="btn" id="btnAgregar" type="button">＋ Agregar insumo</button>
       <button class="btn" id="btnCargar" type="button">⬆ Cargar desde Excel</button>
       <button class="btn" id="btnPlantilla" type="button">⬇ Descargar plantilla</button>
+      <button class="btn peligro" id="btnLimpiar" type="button" style="margin-left:auto">🧹 Limpiar formulario</button>
       <input type="file" id="archivo" accept=".xlsx,.xls,.csv" hidden>
     </div>
     <div id="avisoFilas"></div>
@@ -538,12 +539,15 @@ let borradorT;
 function guardarBorrador() {
   clearTimeout(borradorT);
   borradorT = setTimeout(() => store.set('insumos_borrador', {
+    t: Date.now(),
     serie: $('#serie').value, fecha: $('#fecha').value, solicitante: $('#solicitante').value,
     filas: filas.map(f => ({ orden: f.orden, codigo: f.codigo, obs: f.obs, cantTxt: f.cantTxt }))
   }), 250);
 }
+const BORRADOR_MINUTOS = 30; // después de 30 minutos sin tocarlo, el formulario abre limpio
 function restaurarBorrador() {
-  const b = store.get('insumos_borrador', null);
+  let b = store.get('insumos_borrador', null);
+  if (b && !(b.t && Date.now() - b.t < BORRADOR_MINUTOS * 60000)) { b = null; store.del('insumos_borrador'); }
   $('#serie').value = (b && b.serie) || '';
   $('#fecha').value = (b && b.fecha) || hoyISO();
   $('#solicitante').value = (b && b.solicitante) || '';
@@ -821,6 +825,10 @@ async function iniciar() {
   restaurarBorrador(); actualizarResumen(); pintarPendientes(); pintarRecientes(); estadoRed();
   $('#btnAgregar').addEventListener('click', () => { const f = crearFila(); if (f) { $('.in-item', f.el).focus(); guardarBorrador(); } });
   $('#btnEnviar').addEventListener('click', enviar);
+  $('#btnLimpiar').addEventListener('click', () => {
+    if (!confirm('¿Borrar todo lo que está escrito en el formulario?')) return;
+    limpiarFormulario(); window.scrollTo({ top: 0, behavior: 'smooth' }); toast('Formulario limpio.');
+  });
   if (!DEMO) {
     try { const r = await api.items(); if (r.items && r.items.length) { cargarLista(r.items); store.set('insumos_items', { t: Date.now(), items: r.items }); } }
     catch (e) { /* se usa la copia guardada o la de respaldo */ }
